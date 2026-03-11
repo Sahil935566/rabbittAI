@@ -11,8 +11,9 @@ st.subheader("Talk to your business data")
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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"
+    api_key=os.getenv("OPENROUTER_API_KEY")
 )
+
 uploaded_file = st.file_uploader("Upload your sales CSV", type=["csv"])
 
 if uploaded_file:
@@ -38,12 +39,12 @@ Sample data:
 User Question:
 {question}
 
-Give a short, clear answer.
+Give a short clear answer.
 """
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
+            messages=[{"role": "user", "content": prompt}]
         )
 
         answer = response.choices[0].message.content
@@ -54,10 +55,13 @@ Give a short, clear answer.
     st.write("### Quick Visualization")
 
     x_col = st.selectbox("X Axis", df.columns)
+
     numeric_cols = df.select_dtypes(include="number").columns
 
     if len(numeric_cols) > 0:
+
         y_col = st.selectbox("Y Axis", numeric_cols)
 
         fig = px.bar(df, x=x_col, y=y_col)
+
         st.plotly_chart(fig)
